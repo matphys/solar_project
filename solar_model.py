@@ -17,11 +17,8 @@ def calculate_force(body, space_objects):
         if body == obj:
             continue  # тело не действует гравитационной силой на само себя!
         r = ((body.x - obj.x)**2 + (body.y - obj.y)**2)**0.5
-        #print(body.x,body.y,obj.y,obj.x)
-        #print(body.color,obj.color)
-        F=gravitational_constant*obj.m*body.m/r**2
-        body.Fx += F*((obj.x-body.x)/r)   # FIXME: нужно вывести формулу...
-        body.Fy += F*((obj.y-body.y)/r)  # FIXME: нужно вывести формулу...
+        body.Fx += (gravitational_constant*body.m*obj.m/(r**2))*(abs(body.x-obj.x)/r)
+        body.Fy += (gravitational_constant*body.m*obj.m/(r**2))*(abs(body.y-obj.y)/r)
 
 
 def move_space_object(body, dt):
@@ -31,29 +28,9 @@ def move_space_object(body, dt):
     """
 
     ax = body.Fx/body.m
-    body.x += body.Vx*dt+ax*dt**2/2 # FIXME: не понимаю как менять...
+    ay=body.Fy/body.m
+    body.x += body.Vx*dt+ax*dt**2/2  # FIXME: не понимаю как менять...
     body.Vx += ax*dt
-    ay = body.Fy/body.m
-    body.y += body.Vy*dt+ay*dt**2/2 # FIXME: не понимаю как менять...
-    body.Vy += ay*dt
+    body.y+=body.Vy*dt+ay*dt**2/2
+    body.Vy+=ay*dt
     # FIXME: not done recalculation of y coordinate!
-    status=open('status.txt','a')
-    print( "%s %f %f %f %f" % (body.color,body.x,body.y,body.Vx,body.Vy ), file=status)
-
-
-def recalculate_space_objects_positions(space_objects, dt):
-    """Пересчитывает координаты объектов.
-    Параметры:
-    **space_objects** — список оьъектов, для которых нужно пересчитать координаты.
-    **dt** — шаг по времени
-    """
-
-    for body in space_objects:
-        calculate_force(body, space_objects)
-    for body in space_objects:
-        move_space_object(body, dt)
-    
-
-
-if __name__ == "__main__":
-    print("This module is not for direct call!")
